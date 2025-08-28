@@ -1,0 +1,33 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Arial', sans-serif;
+  background-color: black;
+  background-image: radial-gradient(circle at center bottom, #1a1a40, #0d1b2a, #000000);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+#stars, #aquarius {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+
+#aquarius {
+  z-index: 1;
+}
+
+#label {
+  position: absolute;
+  color: white;
+  font-size: 2em;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-shadow: 0 0 3px white;
+}
