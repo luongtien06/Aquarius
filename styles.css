@@ -1,7 +1,7 @@
 body {
   margin: 0;
   overflow: hidden;
-  font-family: 'Arial', sans-serif;
+  font-family: "Allura", "Great Vibes", "Sacramento", cursive;
   background-color: black;
   background-image: radial-gradient(circle at center bottom, #1a1a40, #0d1b2a, #000000);
   background-size: cover;
@@ -30,4 +30,5 @@ body {
   left: 50%;
   transform: translateX(-50%);
   text-shadow: 0 0 3px white;
+
 }
