@@ -4,13 +4,277 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AQUARIUS</title>
-    <link rel="icon" href="img/Aquarius.jpg" >
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://i.pinimg.com/474x/3b/53/3f/3b533f49baadc203ca1e6d4558f16eae.jpg" rel="stylesheet">
 </head>
+<style>
+    body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: "Allura", "Great Vibes", "Sacramento", cursive;
+    background-color: black;
+    background-image: radial-gradient(circle at center bottom, #1a1a40, #0d1b2a, #000000);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    }
+
+    #stars, #aquarius {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    }
+
+    #aquarius {
+    z-index: 1;
+    }
+
+    #label {
+    position: absolute;
+    color: white;
+    font-size: 2em;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-shadow: 0 0 3px white;
+
+    canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    }
+}
+</style>
 <body>
     <canvas id="stars"></canvas>
     <canvas id="aquarius"></canvas>
     <div id="label">Aquarius</div>
-    <script src="script.js"></script>
+    <script>
+        // NỀN SAO
+        const starCanvas = document.getElementById("stars");
+        const ctx = starCanvas.getContext("2d");
+
+        function resizeCanvas() {
+        starCanvas.width = window.innerWidth;
+        starCanvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+
+        const stars = Array.from({ length: 800 }, () => ({
+        x: Math.random() * starCanvas.width,
+        y: Math.random() * starCanvas.height,
+        radius: Math.random() * 1.2 + 0.3,
+        alpha: Math.random(),
+        delta: 0.002 + Math.random() * 0.01
+        }));
+
+        let shootingStars = [];
+
+        function createShootingStar() {
+        const angle = Math.PI / 4;
+        // Góc
+
+        shootingStars.push({
+            x: Math.random() * starCanvas.width,
+            y: Math.random() * starCanvas.height * 0.4,
+            length: 150 + Math.random() * 150, // dài
+            speed: 8 + Math.random() * 5,
+            angle: angle,
+            opacity: 1
+        });
+        }
+
+        setInterval(() => {
+        if (Math.random() > 0.6) createShootingStar();
+        }, 2000);
+
+        function drawStars() {
+        ctx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+
+        const gradient = ctx.createRadialGradient(
+            starCanvas.width / 2, starCanvas.height / 2, 100,
+            starCanvas.width / 2, starCanvas.height / 2, starCanvas.height
+        );
+        gradient.addColorStop(0, "#052659");
+        gradient.addColorStop(0.5, "#0b033a");
+        gradient.addColorStop(1, "#000");
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, starCanvas.width, starCanvas.height);
+
+        // Vẽ sao nền
+        stars.forEach(star => {
+            star.alpha += star.delta;
+            if (star.alpha <= 0 || star.alpha >= 1) star.delta *= -1;
+
+            ctx.beginPath();
+            ctx.globalAlpha = star.alpha;
+            ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "white";
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = "white";
+            ctx.fill();
+        });
+
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+
+        // Vẽ sao băng
+        shootingStars.forEach((s, index) => {
+
+        const dx = Math.cos(s.angle);
+        const dy = Math.sin(s.angle);
+
+        // Đầu sao
+        const headX = s.x;
+        const headY = s.y;
+
+        // Đuôi sao nằm phía sau hướng chuyển động
+        const tailX = headX - dx * s.length;
+        const tailY = headY - dy * s.length;
+
+        const gradient = ctx.createLinearGradient(headX, headY, tailX, tailY);
+        gradient.addColorStop(0, `rgba(255,255,255,${s.opacity})`); 
+        gradient.addColorStop(1, "rgba(255,255,255,0)");
+
+        ctx.beginPath();
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 5;
+        ctx.moveTo(headX, headY);
+        ctx.lineTo(tailX, tailY);
+        ctx.stroke();
+
+        // Cập nhật vị trí
+        s.x += dx * s.speed;
+        s.y += dy * s.speed;
+
+        s.opacity -= 0.02;
+
+        if (s.opacity <= 0) shootingStars.splice(index, 1);
+        });
+
+        requestAnimationFrame(drawStars);
+        }
+
+        drawStars();
+
+        // CHÒM SAO BẢO BÌNH
+
+        const aquariusCanvas = document.getElementById("aquarius");
+        const aqCtx = aquariusCanvas.getContext("2d");
+        let starSize;
+
+        function resizeAquarius() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        aquariusCanvas.width = width;
+        aquariusCanvas.height = height;
+
+        //
+        starSize = Math.min(width * 0.25, 300);
+        }
+        resizeAquarius();
+
+        const originalStars = [
+        { x: 1000, y: 250 },
+        { x: 830, y: 340 },
+        { x: 700, y: 410 },
+        { x: 600, y: 460 },
+        { x: 640, y: 660 },
+        { x: 490, y: 520 },
+        { x: 480, y: 670 },
+        { x: 400, y: 680 },
+        { x: 410, y: 810 },
+        { x: 770, y: 610 },
+        { x: 550, y: 1040 },
+        { x: 570, y: 890 },
+        { x: 720, y: 850 },
+        { x: 950, y: 900 }
+        ];
+
+        const connections = [
+        [0,1],[1,2],[2,3],
+        [3,5],[4,5],[5,6],[6,7],[7,8],
+        [8,10],[9,4],[10,11],[11,12],[12,13]
+        ];
+
+        function drawConstellation() {
+        aqCtx.clearRect(0, 0, aquariusCanvas.width, aquariusCanvas.height);
+
+        const canvasWidth = aquariusCanvas.width;
+        const canvasHeight = aquariusCanvas.height;
+
+        // Tính kích thước gốc của chòm sao
+        const minX = Math.min(...originalStars.map(s => s.x));
+        const maxX = Math.max(...originalStars.map(s => s.x));
+        const minY = Math.min(...originalStars.map(s => s.y));
+        const maxY = Math.max(...originalStars.map(s => s.y));
+
+        const originalWidth = maxX - minX;
+        const originalHeight = maxY - minY;
+
+        // Scale linh hoạt theo màn hình
+        const scaleX = canvasWidth / originalWidth;
+        const scaleY = canvasHeight / originalHeight;
+        const scale = Math.min(scaleX, scaleY) * 0.8; 
+        // *0.8 để chừa khoảng trống viền đẹp hơn
+
+        // Tạo sao đã scale
+        const stars = originalStars.map(s => ({
+            x: (s.x - minX) * scale,
+            y: (s.y - minY) * scale
+        }));
+
+        // Căn giữa
+        const offsetX = (canvasWidth - originalWidth * scale) / 2;
+        const offsetY = (canvasHeight - originalHeight * scale) / 2;
+
+        // Glow đường nối
+        aqCtx.strokeStyle = "white";
+        aqCtx.lineWidth = 2;
+        aqCtx.shadowBlur = 15;
+        aqCtx.shadowColor = "#00d4ff";
+
+        connections.forEach(([a, b]) => {
+            aqCtx.beginPath();
+            aqCtx.moveTo(stars[a].x + offsetX, stars[a].y + offsetY);
+            aqCtx.lineTo(stars[b].x + offsetX, stars[b].y + offsetY);
+            aqCtx.stroke();
+        });
+
+        // Vẽ sao
+        stars.forEach(star => {
+            const radius = 5;
+
+            aqCtx.beginPath();
+            aqCtx.arc(star.x + offsetX, star.y + offsetY, radius, 0, Math.PI * 2);
+            aqCtx.fillStyle = "white";
+            aqCtx.shadowBlur = 25;
+            aqCtx.shadowColor = "#00ffff";
+            aqCtx.fill();
+        });
+
+        requestAnimationFrame(drawConstellation);
+        }
+
+        drawConstellation();
+
+        let resizeTimeout;
+
+        window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+
+        resizeTimeout = setTimeout(() => {
+            location.reload();
+        }, 1);
+        });
+    </script>
 </body>
 </html>
